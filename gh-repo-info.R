@@ -11,7 +11,7 @@ library(readr)
 # gh functions ----
 gh_workflows <- memoise::memoise(function(owner, repo, ...) {
   tryCatch(
-    gh("/repos/{owner}/{repo}/actions/workflows", owner = owner, repo = repo) %>%
+    gh("/repos/:owner/:repo/actions/workflows", owner = owner, repo = repo) %>%
       .$workflows,
     error = function(e) NULL
   )
@@ -19,7 +19,7 @@ gh_workflows <- memoise::memoise(function(owner, repo, ...) {
 
 gh_runs <- memoise::memoise(function(owner, repo, workflow_id, ...) {
   gh(
-    "/repos/{owner}/{repo}/actions/workflows/{workflow_id}/runs",
+    "/repos/:owner/:repo/actions/workflows/:workflow_id/runs",
     owner = owner,
     repo = repo,
     workflow_id = workflow_id,
@@ -32,11 +32,11 @@ gh_url <- memoise::memoise(function(url) {
 }, cache = cache_memory())
 
 gh_repo <- memoise::memoise(function(owner, repo, ...) {
-  gh("/repos/{owner}/{repo}", owner = owner, repo = repo)
+  gh("/repos/:owner/:repo", owner = owner, repo = repo)
 }, cache = cache_memory())
 
 gh_owner_repos <- memoise::memoise(function(owner) {
-  gh("/users/{username}/repos", username = owner, .limit = Inf, type = "owner") %>%
+  gh("/users/:username/repos", username = owner, .limit = Inf, type = "owner") %>%
     map(keep, negate(is.null)) %>%
     map(keep, negate(is.list)) %>%
     map_dfr(as_tibble) %>%
